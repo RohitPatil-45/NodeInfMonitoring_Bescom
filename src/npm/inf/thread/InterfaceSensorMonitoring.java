@@ -756,7 +756,7 @@ public class InterfaceSensorMonitoring implements Runnable {
             }
 
             try {
-                Thread.sleep(40000);
+                Thread.sleep(10000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(InterfaceSensorMonitoring.class.getName()).log(Level.SEVERE, null, ex);
             }

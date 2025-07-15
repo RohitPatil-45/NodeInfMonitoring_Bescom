@@ -43,7 +43,8 @@ public class InterfaceStatusUpdateBatch implements Runnable {
             try {
                 connection = Datasource.getConnection();
 
-                sql = "UPDATE INTERFACE_MONITORING SET ADMIN_STATUS=?,OPER_STATUS=?,STATUS_TIMESTAMP=? WHERE NODE_IP=? AND INTERFACE_NAME=?";
+                sql = "UPDATE INTERFACE_MONITORING SET ADMIN_STATUS=?,OPER_STATUS=?,STATUS_TIMESTAMP=?,OPER_STATUS_Generated_Time=?,OPER_STATUS_Cleared_Time=?"
+                        + " WHERE NODE_IP=? AND INTERFACE_NAME=?";
                 preparedStatement = connection.prepareStatement(sql);
 
                 String sql2 = "INSERT INTO INTERFACE_STATUS_HISTORY (EVENT_TIMESTAMP,INTERFACE_NAME,INTERFACE_STATUS,INTERFACE_STATUS_TYPE,IP_INTERFACE,NODE_IP) VALUES (?,?,?,?,?,?)";
@@ -55,8 +56,10 @@ public class InterfaceStatusUpdateBatch implements Runnable {
                         preparedStatement.setString(1, NodeInfMonitoring.tempStatusUpdateInterfaceList.get(i).getAdmin_status());
                         preparedStatement.setString(2, NodeInfMonitoring.tempStatusUpdateInterfaceList.get(i).getOperational_status());
                         preparedStatement.setTimestamp(3, NodeInfMonitoring.tempStatusUpdateInterfaceList.get(i).getEventTime());
-                        preparedStatement.setString(4, NodeInfMonitoring.tempStatusUpdateInterfaceList.get(i).getDevice_ip());
-                        preparedStatement.setString(5, NodeInfMonitoring.tempStatusUpdateInterfaceList.get(i).getInterface_name());
+                        preparedStatement.setTimestamp(4, NodeInfMonitoring.tempStatusUpdateInterfaceList.get(i).getOperational_status().equalsIgnoreCase("Down") ? NodeInfMonitoring.tempStatusUpdateInterfaceList.get(i).getEventTime() : null);
+                        preparedStatement.setTimestamp(5, NodeInfMonitoring.tempStatusUpdateInterfaceList.get(i).getOperational_status().equalsIgnoreCase("Up") ? NodeInfMonitoring.tempStatusUpdateInterfaceList.get(i).getEventTime() : null);
+                        preparedStatement.setString(6, NodeInfMonitoring.tempStatusUpdateInterfaceList.get(i).getDevice_ip());
+                        preparedStatement.setString(7, NodeInfMonitoring.tempStatusUpdateInterfaceList.get(i).getInterface_name());
                         preparedStatement.addBatch();
                         System.out.println("updated IP :" + NodeInfMonitoring.tempStatusUpdateInterfaceList.get(i).getDevice_ip() + ":" + NodeInfMonitoring.tempStatusUpdateInterfaceList.get(i).getInterface_name());
 
@@ -93,7 +96,7 @@ public class InterfaceStatusUpdateBatch implements Runnable {
                 int[] count2 = preparedStatement2.executeBatch();
                 connection.commit();
 
-                System.out.println("##UPDATE Interface status count: " + count.length+":"+count2.length);
+                System.out.println("##UPDATE Interface status count: " + count.length + ":" + count2.length);
             } catch (Exception exp) {
                 System.out.println("Exception batch update interface status:" + exp);
             } finally {
