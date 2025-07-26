@@ -425,6 +425,7 @@ public class InterfaceSensorMonitoring implements Runnable {
                             crc_value = snmpv3.BandwidthGetVect(target, "crc", interface_id);
                         } else if (NodeInfMonitoring.device_type_map.get(device_ip).equalsIgnoreCase("DMBS")) {
                             crc_value = snmpv2.BandwidthGetVect(target, "MicrowaveCRC", interface_id);
+                            System.out.println("CRC value == "+crc_value);
                         } else {
                             crc_value = snmpv2.BandwidthGetVect(target, "crc", interface_id);
                         }
@@ -487,6 +488,7 @@ public class InterfaceSensorMonitoring implements Runnable {
                                     inBW = snmpv3.BandwidthGetVect(target, "In", interface_id);
                                 } else if (NodeInfMonitoring.device_type_map.get(device_ip).equalsIgnoreCase("DMBS")) {
                                     inBW = snmpv2.BandwidthGetVect(target, "MicrowaveInOctet", interface_id);
+                                    System.out.println("in traffic == "+inBW);
                                 } else {
                                     inBW = snmpv2.BandwidthGetVect(target, "In", interface_id);
                                 }
